@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Aravind Store | Request Acount Delete</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <header class="bg-white shadow mb-8">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center flex justify-between">
+            <div class="flex items-center">
+                <img src="./Logo.png" alt="Company Logo" class="h-12 w-24 mr-3">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Sri Aravind Stores</h1>
+                    <p class="text-sm text-gray-600">Providing Quality Services Since 2023</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900"> Request Acount Delete</h2>
+            <form id="search-form" class="mt-8 space-y-6">
+                <div>
+                    <label for="mobile-number" class="block text-sm font-medium text-gray-700">Mobile Number</label>
+                    <input id="mobile-number" name="mobile-number" type="text" required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                </div>
+                <div>
+                    <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Search User
+                    </button>
+                </div>
+            </form>
+
+            <div id="user-details" class="hidden mt-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="user-delete-header"></h3>
+                <div class="mt-4">
+                    <button id="delete-btn"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Delete User
+                    </button>
+                </div>
+            </div>
+
+            <div id="message" class="hidden mt-6 text-green-600"></div>
+            <div id="error" class="hidden mt-6 text-red-600"></div>
+        </div>
+        <a href="./deleteUser.html" target="_blank" rel="noopener noreferrer">...</a>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js"></script>
+    <script>
+        // Initialize Firebase
+        const firebaseConfig = {
+         
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
+
+        document.getElementById('search-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const mobileNumber = document.getElementById('mobile-number').value;
+            document.getElementById('error').classList.add('hidden');
+            document.getElementById('message').classList.add('hidden');
+
+            try {
+                const usersCollection = db.collection('users');
+                const querySnapshot = await usersCollection.where('phonenumber', '==', mobileNumber).get();
+
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
+                    document.getElementById('user-delete-header').textContent = `Are you sure to delete user ${userData.username} ??`;
+                    document.getElementById('user-details').classList.remove('hidden');
+                    document.getElementById('delete-btn').addEventListener('click', async function () {
+                        try {
+                            await db.collection('users').doc(querySnapshot.docs[0].id).delete();
+                            document.getElementById('message').textContent = `User ${userData.username} deleted successfully.`;
+                            document.getElementById('message').classList.remove('hidden');
+                            document.getElementById('user-details').classList.add('hidden');
+                        } catch (error) {
+                            console.error('Error deleting user:', error);
+                            document.getElementById('error').textContent = 'There was an error deleting the user.';
+                            document.getElementById('error').classList.remove('hidden');
+                        }
+                    });
+                } else {
+                    document.getElementById('error').textContent = 'No user found with the provided mobile number.';
+                    document.getElementById('error').classList.remove('hidden');
+                    document.getElementById('user-details').classList.add('hidden');
+                }
+            } catch (err) {
+                console.error('Error finding user:', err);
+                document.getElementById('error').textContent = 'There was an error finding the user.';
+                document.getElementById('error').classList.remove('hidden');
+                document.getElementById('user-details').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
