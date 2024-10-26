@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sri Suriya Store | Request Acount Delete</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Sri Suriya Store | Request Account Delete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <header class="bg-white shadow mb-8">
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center flex justify-between">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
             <div class="flex items-center">
                 <!-- <img src="./Logo.png" alt="Company Logo" class="h-12 w-24 mr-3"> -->
                 <div>
@@ -22,7 +22,7 @@
     </header>
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900"> Request Acount Delete</h2>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">Request Account Delete</h2>
             <form id="search-form" class="mt-8 space-y-6">
                 <div>
                     <label for="mobile-number" class="block text-sm font-medium text-gray-700">Mobile Number</label>
@@ -50,19 +50,23 @@
             <div id="message" class="hidden mt-6 text-green-600"></div>
             <div id="error" class="hidden mt-6 text-red-600"></div>
         </div>
-        <a href="./deleteUser.html" target="_blank" rel="noopener noreferrer">...</a>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore-compat.js"></script>
     <script>
         // Initialize Firebase
         const firebaseConfig = {
-         
+            apiKey: "AIzaSyD5DA_CVAebulUDPopGQNBcevL-4zeehC4",
+            authDomain: "the-suriya-store.firebaseapp.com",
+            projectId: "the-suriya-store",
+            storageBucket: "the-suriya-store.appspot.com",
+            messagingSenderId: "426251158669",
+            appId: "1:426251158669:web:c599b59f8b19ed70194ec4"
         };
 
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
         document.getElementById('search-form').addEventListener('submit', async function (event) {
             event.preventDefault();
@@ -76,9 +80,10 @@
 
                 if (!querySnapshot.empty) {
                     const userData = querySnapshot.docs[0].data();
-                    document.getElementById('user-delete-header').textContent = `Are you sure to delete user ${userData.username} ??`;
+                    document.getElementById('user-delete-header').textContent = `Are you sure to delete user ${userData.username}?`;
                     document.getElementById('user-details').classList.remove('hidden');
-                    document.getElementById('delete-btn').addEventListener('click', async function () {
+
+                    document.getElementById('delete-btn').onclick = async function () {
                         try {
                             await db.collection('users').doc(querySnapshot.docs[0].id).delete();
                             document.getElementById('message').textContent = `User ${userData.username} deleted successfully.`;
@@ -89,7 +94,7 @@
                             document.getElementById('error').textContent = 'There was an error deleting the user.';
                             document.getElementById('error').classList.remove('hidden');
                         }
-                    });
+                    };
                 } else {
                     document.getElementById('error').textContent = 'No user found with the provided mobile number.';
                     document.getElementById('error').classList.remove('hidden');
